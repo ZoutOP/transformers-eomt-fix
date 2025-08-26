@@ -486,6 +486,7 @@ class EomtImageProcessorFast(BaseImageProcessorFast):
         target_sizes: list[tuple[int, int]],
         threshold: float = 0.8,
         size: Optional[dict[str, int]] = None,
+        return_binary_maps: Optional[bool] = False
     ):
         """Post-processes model outputs into Instance Segmentation Predictions."""
 
@@ -541,6 +542,10 @@ class EomtImageProcessorFast(BaseImageProcessorFast):
                     )
                     current_segment_id += 1
                     instance_maps.append(pred_masks[j])
+            # Return a concatenated tensor of binary instance maps
+
+            if return_binary_maps and len(instance_maps) != 0:
+                segmentation = torch.stack(instance_maps, dim=0)
 
             results.append({"segmentation": segmentation, "segments_info": segments})
         return results
